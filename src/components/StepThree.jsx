@@ -1,35 +1,59 @@
-import { Box, Button, Flex } from '@chakra-ui/react'
-import useSorteo from '../hooks/useSorteo'
-import { steps } from '../const/config'
+import { Box, Button, ListItem, OrderedList } from '@chakra-ui/react'
+import { useSorteo } from '../hooks/useSorteo'
 
-function generarGanadores (participantes, cantGan) {
-  const ganadores = [...Object.keys(cantGan)].reduce((acc, n) => {
-    const index = Math.floor(Math.random() * participantes.length)
-    const [ganador] = participantes.splice(index, 1)
-    return acc.concat(ganador)
-  }, [])
-
-  return ganadores
-}
+import { shallow } from 'zustand/shallow'
+import { useEffect, useState } from 'react'
+import { generarResultados } from '../utils/generateResultados'
 
 const StepThree = () => {
-  const { sorteo, activeStep, reset } = useSorteo()
+  // const [ganadores, setGanadores] = useState([])
+  const { participantes, config } = useSorteo(
+    (state) => ({
+      participantes: state.participantes,
+      config: state.configuracion
+    }),
+    shallow
+  )
+  const ganadores = generarResultados(
+    participantes,
+    Number(config.cantidad_ganadores)
+  )
 
-  const ganadores = generarGanadores(sorteo.participantes, sorteo.cantidadGanadores)
+  console.log(ganadores)
+
+  // useEffect(() => {
+  //   const ganadores = generarResultados(
+  //     participantes,
+  //     Number(config.cantidad_ganadores)
+  //   )
+  //   setGanadores(ganadores)
+  // }, [])
 
   return (
     <Box>
-      GANADOR{ganadores.length > 1 ? 'ES' : ''} {ganadores.join(' - ')}
+      {/* GANADOR{ganadores.length > 1 ? 'ES' : ''} */}
 
-      <Flex width='100%' justifyContent='center' alignItems='center'>
-        {activeStep === steps.length && (
-          <Flex p={4}>
-            <Button mx='auto' size='md' onClick={reset}>
-              Nuevo sorteo
-            </Button>
-          </Flex>
-        )}
-      </Flex>
+      <OrderedList
+        display='flex'
+        height='200px'
+        justifyContent='center'
+        alignItems='center'
+      >
+        {ganadores.map((g, i) => (
+          <ListItem
+            key={g}
+            fontSize={40 - i * 7}
+            w='150px'
+            order={i === 0 ? 1 : i - 1}
+            alignSelf={i === 0 ? 'flex-start' : 'inherit'}
+          >
+            {' '}
+            {g}{' '}
+          </ListItem>
+        ))}
+      </OrderedList>
+
+      <Button>volder a sortear</Button>
     </Box>
   )
 }

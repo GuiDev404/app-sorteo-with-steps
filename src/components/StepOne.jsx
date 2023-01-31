@@ -7,23 +7,25 @@ import {
   Textarea
 } from '@chakra-ui/react'
 import React, { useId, useState } from 'react'
-import useSorteo from '../hooks/useSorteo'
-import NextPrev from './NextPrev'
+import { useSorteo } from '../hooks/useSorteo'
 
 const StepOne = () => {
-  const { sorteo, handleUpdate } = useSorteo()
+  const setParticipantes = useSorteo((state) => state.setParticipantes)
+  const participantesStored = useSorteo((state) => state.participantes)
   const id = useId()
 
-  const [participantes, setParcipantes] = useState(sorteo.participantes.join(','))
-  const withoutRepeats = [...new Set(participantes.split(','))].filter(Boolean)
-
-  const handleParticipantes = () => {
-    handleUpdate({ participantes: withoutRepeats })
-  }
+  const [participantes, setParcipantes] = useState(
+    participantesStored.join(',')
+  )
+  const participantesSinRepetir = [...new Set(participantes.split(','))].filter(
+    Boolean
+  )
 
   const handleChange = (e) => {
     const rawParcipantes = e.target.value.toLowerCase()
     setParcipantes(rawParcipantes)
+
+    setParticipantes(participantesSinRepetir)
   }
 
   return (
@@ -31,6 +33,7 @@ const StepOne = () => {
       <Box
         display='flex'
         gap={2}
+        as='form'
         flexDirection='column'
       >
         <FormControl>
@@ -53,9 +56,9 @@ const StepOne = () => {
       </Box>
 
       <Box my={3} display='flex' gap='1' bg='gray.700' rounded='md' p={4}>
-        {withoutRepeats.length > 0
+        {participantesSinRepetir.length > 0
           ? (
-              withoutRepeats.map((participante) => (
+              participantesSinRepetir.map((participante) => (
                 <Tag size='lg' py={1} px={2} key={participante}>
                   {' '}
                   {participante}{' '}
@@ -63,13 +66,19 @@ const StepOne = () => {
               ))
             )
           : (
-            <Text fontSize='xl' fontWeight='black' textAlign='center' w='100%' p={2}>
+            <Text
+              fontSize='xl'
+              fontWeight='black'
+              textAlign='center'
+              w='100%'
+              p={2}
+            >
               Agregue participantes
             </Text>
             )}
       </Box>
 
-      <NextPrev onNext={handleParticipantes} />
+      {/* <NextPrev onNext={handleParticipantes} /> */}
     </>
   )
 }

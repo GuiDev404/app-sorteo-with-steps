@@ -1,6 +1,6 @@
 import { Container } from '@chakra-ui/react'
 import Header from './components/Header'
-import StepContent from './components/StepContent'
+
 import StepsSorteo from './components/StepsSorteo'
 
 function App () {
@@ -11,9 +11,8 @@ function App () {
         subtitle='Cargue los participantes, configure algunos detalles y !HAY UN GANADOR! 🏆'
       />
 
-      <StepContent>
-        <StepsSorteo />
-      </StepContent>
+      <StepsSorteo />
+
     </Container>
   )
 }

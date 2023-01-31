@@ -11,26 +11,30 @@ import {
   Text
 } from '@chakra-ui/react'
 import React, { useId, useState } from 'react'
-import useSorteo from '../hooks/useSorteo'
-import NextPrev from './NextPrev'
+import { useSorteo } from '../hooks/useSorteo'
+// import useSorteo from '../hooks/useSorteo'
+// import NextPrev from './NextPrev'
 
 const StepTwo = () => {
-  const { sorteo, handleUpdate } = useSorteo()
-  const [config, setConfig] = useState({
-    premio: sorteo.premio,
-    cantidadGanadores: sorteo?.cantidadGanadores
-  })
   const id = useId()
+  const setConfiguracion = useSorteo((state) => state.setConfiguracion)
+  const configuracion = useSorteo((state) => state.configuracion)
 
-  const handleChange = (e) => {
-    setConfig((prevConfig) => ({
-      ...prevConfig,
-      [e?.target?.name ?? 'cantidadGanadores']: e?.target?.value ?? e
-    }))
+  const [premio, setPremio] = useState(configuracion.premio)
+  const [cantidadGanadores, setCantidadGanadores] = useState(configuracion.cantidad_ganadores)
+
+  const handleChangePremio = (e) => {
+    setPremio(e.target.value)
+    updateConfig()
   }
 
-  const handleConfig = () => {
-    handleUpdate(config)
+  const handleChangeCantidadGanadores = (cantidad) => {
+    setCantidadGanadores(Number(cantidad))
+    updateConfig()
+  }
+
+  const updateConfig = () => {
+    setConfiguracion({ premio, cantidad_ganadores: cantidadGanadores })
   }
 
   return (
@@ -43,13 +47,16 @@ const StepTwo = () => {
 
           <NumberInput
             min={1}
-            max={sorteo.participantes.length}
-            isDisabled={sorteo.participantes.length === 0}
-            onChange={handleChange}
-            value={config.cantidadGanadores}
+            max={2}
+            // isDisabled={configuracion.participantes.length === 0}
+            onChange={handleChangeCantidadGanadores}
+            value={cantidadGanadores}
+            name='cantidad_ganadores'
+            form={`form-${id}`}
           >
             <NumberInputField
-              name='cantidadGanadores'
+              form={`form-${id}`}
+              name='cantidad_ganadores'
               placeholder='Ej: 3'
             />
             <NumberInputStepper>
@@ -66,8 +73,8 @@ const StepTwo = () => {
         <FormControl>
           <FormLabel htmlFor={`${id}-premio`}>Ingrese el premio</FormLabel>
           <Input
-            onChange={handleChange}
-            value={config.premio}
+            onChange={handleChangePremio}
+            value={premio}
             name='premio'
             id={`${id}-premio`}
             placeholder='Ej: un termo'
@@ -75,7 +82,7 @@ const StepTwo = () => {
         </FormControl>
       </Box>
 
-      <NextPrev onNext={handleConfig} onPrev={handleConfig} />
+      {/* <NextPrev onNext={handleConfig} onPrev={handleConfig} /> */}
     </>
   )
 }
