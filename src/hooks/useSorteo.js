@@ -2,17 +2,17 @@ import { create } from 'zustand'
 
 export const useSorteo = create((set, get) => ({
   participantes: [],
-  // ganador: '',
   configuracion: {
     cantidad_ganadores: 1,
     premio: ''
   },
   setParticipantes: (participantes) => {
-    set({ participantes })
+    const participantesClean = [...new Set(participantes.split(','))]
+      .map(p => p.trim().toLowerCase())
+      .filter(Boolean)
+
+    set({ participantes: participantesClean })
   },
-  // setGanador: (ganador) => {
-  //   set({ ganador })
-  // },
   setConfiguracion: (configuracion) => {
     set({ configuracion })
   }

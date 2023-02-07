@@ -1,84 +1,65 @@
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Tag,
-  Text,
-  Textarea
-} from '@chakra-ui/react'
-import React, { useId, useState } from 'react'
+import React, { useId } from 'react'
+import { Box, FormControl, FormLabel, Text, Textarea } from '@chakra-ui/react'
 import { useSorteo } from '../hooks/useSorteo'
+import PlusIcon from './PlusIcon'
+import ListOfTags from './ListOfTags'
 
 const StepOne = () => {
   const setParticipantes = useSorteo((state) => state.setParticipantes)
-  const participantesStored = useSorteo((state) => state.participantes)
+  const participantes = useSorteo((state) => state.participantes)
   const id = useId()
 
-  const [participantes, setParcipantes] = useState(
-    participantesStored.join(',')
-  )
-  const participantesSinRepetir = [...new Set(participantes.split(','))].filter(
-    Boolean
-  )
-
   const handleChange = (e) => {
-    const rawParcipantes = e.target.value.toLowerCase()
-    setParcipantes(rawParcipantes)
-
-    setParticipantes(participantesSinRepetir)
+    setParticipantes(e.target.value.trim())
   }
 
   return (
     <>
       <Box
+        mt={4}
         display='flex'
         gap={2}
         as='form'
         flexDirection='column'
       >
+
         <FormControl>
           <FormLabel htmlFor={`${id}-nombre`}>
             Ingrese el nombre del participante
           </FormLabel>
           <Textarea
             name='nombre'
+            minHeight={150}
+            maxHeight={150}
             id={`${id}-nombre`}
-            placeholder='Ej: Carlos'
+            placeholder='Ej: Carlos, Marcos'
             onChange={handleChange}
-            value={participantes}
+            defaultValue={participantes.join(',')}
           />
         </FormControl>
 
-        {/* <Button type="submit" w={250}>
-          {" "}
-          Agregar{" "}
-        </Button> */}
       </Box>
 
       <Box my={3} display='flex' gap='1' bg='gray.700' rounded='md' p={4}>
-        {participantesSinRepetir.length > 0
-          ? (
-              participantesSinRepetir.map((participante) => (
-                <Tag size='lg' py={1} px={2} key={participante}>
-                  {' '}
-                  {participante}{' '}
-                </Tag>
-              ))
-            )
+        {participantes.length > 0
+          ? <ListOfTags tags={participantes} />
           : (
             <Text
               fontSize='xl'
               fontWeight='black'
-              textAlign='center'
+              gap='2'
+              display='flex'
+              justifyContent='center'
+              alignItems='center'
               w='100%'
               p={2}
             >
-              Agregue participantes
+              <PlusIcon width='30' height='30' />
+              <Text as='span'> Agregue participantes </Text>
             </Text>
             )}
       </Box>
 
-      {/* <NextPrev onNext={handleParticipantes} /> */}
     </>
   )
 }

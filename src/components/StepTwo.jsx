@@ -10,47 +10,41 @@ import {
   NumberInputStepper,
   Text
 } from '@chakra-ui/react'
-import React, { useId, useState } from 'react'
+import React, { useId } from 'react'
 import { useSorteo } from '../hooks/useSorteo'
-// import useSorteo from '../hooks/useSorteo'
-// import NextPrev from './NextPrev'
 
 const StepTwo = () => {
   const id = useId()
+  const participantes = useSorteo((state) => state.participantes)
   const setConfiguracion = useSorteo((state) => state.setConfiguracion)
   const configuracion = useSorteo((state) => state.configuracion)
 
-  const [premio, setPremio] = useState(configuracion.premio)
-  const [cantidadGanadores, setCantidadGanadores] = useState(configuracion.cantidad_ganadores)
-
   const handleChangePremio = (e) => {
-    setPremio(e.target.value)
-    updateConfig()
+    updateConfig({ premio: e.target.value })
   }
 
   const handleChangeCantidadGanadores = (cantidad) => {
-    setCantidadGanadores(Number(cantidad))
-    updateConfig()
+    updateConfig({ cantidad_ganadores: Number(cantidad) })
   }
 
-  const updateConfig = () => {
-    setConfiguracion({ premio, cantidad_ganadores: cantidadGanadores })
+  const updateConfig = (rest) => {
+    setConfiguracion({ ...configuracion, ...rest })
   }
 
   return (
     <>
-      <Box display='flex' gap={2} flexDirection='column'>
+      <Box my={4} display='flex' gap={2} flexDirection='column'>
         <FormControl>
           <FormLabel htmlFor={`${id}-cantidad`}>
             Ingrese la cantidad de ganadores
           </FormLabel>
 
           <NumberInput
+            isDisabled={participantes.length < 2}
             min={1}
-            max={2}
-            // isDisabled={configuracion.participantes.length === 0}
+            max={participantes.length > 3 ? 3 : participantes.length}
             onChange={handleChangeCantidadGanadores}
-            value={cantidadGanadores}
+            defaultValue={configuracion.cantidad_ganadores}
             name='cantidad_ganadores'
             form={`form-${id}`}
           >
@@ -65,24 +59,25 @@ const StepTwo = () => {
             </NumberInputStepper>
           </NumberInput>
 
-          <Text fontSize='sm' color='gray.500'>
-            {' '}
-            * Debe ser menor o igual a la cantidad de participantes
-          </Text>
+          {participantes.length < 2 && (
+            <Text fontSize='sm' mt={1} color='red.400'>
+              * Debe haber al menos 2 participante
+            </Text>
+          )}
         </FormControl>
+
         <FormControl>
           <FormLabel htmlFor={`${id}-premio`}>Ingrese el premio</FormLabel>
           <Input
             onChange={handleChangePremio}
-            value={premio}
             name='premio'
             id={`${id}-premio`}
             placeholder='Ej: un termo'
+            defaultValue={configuracion.premio}
           />
         </FormControl>
       </Box>
 
-      {/* <NextPrev onNext={handleConfig} onPrev={handleConfig} /> */}
     </>
   )
 }
